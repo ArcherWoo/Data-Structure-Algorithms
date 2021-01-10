@@ -144,7 +144,7 @@ void quicksort(ListNode start, ListNode end)
 	ListNode l = start;
 	while(r != NULL)
 	{
-		if (r -> val < l -> val)
+		if (r -> val < start -> val)
 		{
 			l = l -> next;
 			swap(l, r);
