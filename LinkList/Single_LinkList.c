@@ -7,23 +7,29 @@ typedef struct node
 	struct node *next;
 }Node, *ListNode;
 
-ListNode create()
+ListNode *create()
 {
 	ListNode newNode = malloc(sizeof(Node));
 	newNode -> val = 0;
 	newNode -> next = NULL;
-	return newNode;
+
+	static ListNode arr[2];
+
+	arr[0] = newNode;
+	arr[1] = NULL;
+
+	return arr;
 }
 
-void printLL(ListNode node)
+void printLL(ListNode *node)
 {
-	if (node -> val > 0)
+	if (node[0] -> val > 0)
 	{
-		node = node -> next;
-		while(node != NULL)
+		ListNode ptr = node[0] -> next;
+		while(ptr != NULL)
 		{
-			printf("%d\n", node -> val);
-			node = node -> next;
+			printf("%d\n", ptr -> val);
+			ptr = ptr -> next;
 		}
 	}
 	else
@@ -32,105 +38,104 @@ void printLL(ListNode node)
 	}
 }
 
-void addhead(ListNode node, int val)
+void addhead(ListNode *node, int val)
 {
 	ListNode newNode = malloc(sizeof(Node));
 	newNode -> val = val;
-	if (node -> next == NULL)
+	if (node[0] -> next == NULL)
 	{
 		newNode -> next = NULL;
-		node -> next = newNode;
-		node -> val++; 
+		node[0] -> next = newNode;
+		node[1] = newNode;
+		node[0] -> val++; 
 	}
 	else
 	{
-		newNode -> next = node -> next;
-		node -> next = newNode;
-		node -> val++; 
+		newNode -> next = node[0] -> next;
+		node[0] -> next = newNode;
+		node[0] -> val++; 
 	}
 }
 
-void addtail(ListNode node, int val)
+void addtail(ListNode *node, int val)
 {
 	ListNode newNode = malloc(sizeof(Node));
 	newNode -> val = val;
 	newNode -> next = NULL;
-	if (node -> next == NULL)
+	if (node[0] -> next == NULL)
 	{
-		node -> next = newNode;
-		node -> val++; 
+		node[0] -> next = newNode;
+		node[1] = newNode;
+		node[0] -> val++; 
 	}
 	else
 	{
-		node -> val++;
-		while(node -> next != NULL)
-		{
-			node = node -> next;
-		}
-		node -> next = newNode;
+		node[0] -> val++;
+		node[1] -> next = newNode;
+		node[1] = newNode;
 	}
-
 }
 
-void delhead(ListNode node)
+void delhead(ListNode *node)
 {
-	if (node -> next == NULL)
+	if (node[0] -> next == NULL)
 	{
 		printf("List is empty\n");
 	}
 	else
 	{
-		ListNode pt = node -> next;
-		node -> next = pt -> next;
+		ListNode pt = node[0] -> next;
+		node[0] -> next = pt -> next;
 		free(pt);
 		pt = NULL;
-		node -> val--;
+		node[0] -> val--;
 	}
 }
 
-void deltail(ListNode node)
+void deltail(ListNode *node)
 {
-	if (node -> next == NULL)
+	if (node[0] -> next == NULL)
 	{
 		 printf("List is empty\n");
 	}
 	else
 	{
-		node -> val--;
-		while(node -> next -> next != NULL)
+		node[0] -> val--;
+		ListNode ptr = node[0] -> next;
+		while(ptr -> next != node[1])
 		{
-			node = node -> next;
+			ptr = ptr -> next;
 		}
-		ListNode end = node -> next;
-		free(end);
-		end = NULL;
-		node -> next = NULL;
+		free(node[1]);
+		node[1] = ptr;
+		node[1] -> next = NULL;
 	}
 }
 
-void freeALL(ListNode node)
+void freeALL(ListNode *node)
 {
 	ListNode pt, after;
-	if (node -> val > 0)
+	if (node[0] -> val > 0)
 	{
-		pt = node -> next;
+		pt = node[0] -> next;
 		while(pt != NULL)
 		{
 			after = pt -> next;
 			free(pt);
 			pt = after;
-			node -> val--;
+			node[0] -> val--;
 		}
-		node -> next = NULL;
+		node[0] -> next = NULL;
+		node[1] = NULL;
 	}
 }
 
-void reverse(ListNode node)
+void reverse(ListNode *node)
 {
-	if (node -> next -> next != NULL)
+	if (node[0] -> next -> next != NULL)
 	{
-		int count = node -> val;
-		ListNode ptr = node -> next -> next;
+		int count = node[0] -> val;
+		ListNode ptr = node[0] -> next -> next;
 		while(ptr != NULL)
 		{
 			addhead(node, ptr -> val);
@@ -176,7 +181,7 @@ void quicksort(ListNode start, ListNode end)
 
 int main(int argc, char const *argv[])
 {
-	ListNode list = create();
+	ListNode *list = create();
 	addhead(list, 10);
 	addhead(list, 20);
 	addhead(list, 30);
@@ -186,13 +191,13 @@ int main(int argc, char const *argv[])
 	deltail(list);
 	delhead(list);
 
-	printf("%d\n", list -> val);
+	printf("%d\n", list[0] -> val);
 	printLL(list);
 
 	printf("\n");
 	freeALL(list);
 
-	printf("%d\n", list -> val);
+	printf("%d\n", list[0] -> val);
 	printLL(list);
 
 	printf("\n");
@@ -204,10 +209,10 @@ int main(int argc, char const *argv[])
 
 	reverse(list);
 
-	printf("%d\n", list -> val);
+	printf("%d\n", list[0] -> val);
 	printLL(list);
 
-	quicksort(list -> next, NULL);
+	quicksort(list[0] -> next, NULL);
 
 	printf("\n");
 	printLL(list);
